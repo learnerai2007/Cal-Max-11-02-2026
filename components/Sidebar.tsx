@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   TrendingUp, Activity, Settings, PieChart, Cpu, 
-  Zap, Box, BrainCircuit, Star, Clock, Trash2, Calculator, Atom, Search
+  Zap, Box, BrainCircuit, Star, Clock, Trash2, Calculator, Atom, Search, Home
 } from 'lucide-react';
 import { CalculatorCategory, CalculatorDef } from '../types';
 import { CALCULATORS } from '../services/calculatorEngine';
@@ -14,7 +14,7 @@ interface SidebarProps {
   onClose: () => void;
   favorites: string[];
   history: any[];
-  onSelectCalculator: (c: CalculatorDef) => void;
+  onSelectCalculator: (c: CalculatorDef | null) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
@@ -41,6 +41,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     CALCULATORS.find(c => c.id === 'math-scientific')
   ].filter(Boolean) as CalculatorDef[];
 
+  const handleCategoryClick = (id: string | 'All') => {
+    onSelectCalculator(null); // Ensure we go back to the browser view
+    onSelectCategory(id);
+    if (window.innerWidth < 768) onClose();
+  };
+
   const favoriteTools = CALCULATORS.filter(c => favorites.includes(c.id));
   const recentTools = history
     .map(h => CALCULATORS.find(c => c.id === h.calculatorId))
@@ -58,28 +64,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
         transition-transform duration-300 ease-in-out flex flex-col overflow-hidden
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
       `}>
+        {/* Branding Area */}
         <div className="p-8 shrink-0">
           <div 
-            className="flex items-center space-x-3 group cursor-pointer mb-10 active:scale-95 transition-transform" 
-            onClick={() => { onSelectCategory('All'); onSelectCalculator(null as any); }}
+            className="flex items-center space-x-3 group cursor-pointer mb-8 active:scale-95 transition-transform" 
+            onClick={() => { onSelectCategory('All'); onSelectCalculator(null); }}
           >
-            <div className="w-10 h-10 bg-indigo-600 border-4 border-slate-900 rounded-2xl flex items-center justify-center text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:rotate-6 transition-transform">
-               <Zap size={22} fill="white" />
+            <div className="w-12 h-12 bg-indigo-600 border-4 border-slate-900 rounded-2xl flex items-center justify-center text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:rotate-6 transition-transform">
+               <Zap size={24} fill="white" />
             </div>
-            <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none">Cal Max</span>
+            <div className="flex flex-col">
+              <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none">Cal Max</span>
+              <span className="text-[8px] font-black text-indigo-500 uppercase tracking-[0.3em] mt-1">Computation OS</span>
+            </div>
           </div>
 
-          {/* Quick Access Essentials */}
-          <div className="mb-10 space-y-3">
-             <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 mb-4">Quick Access</div>
-             <div className="grid grid-cols-1 gap-2">
+          {/* Essentials - Pinned Actions */}
+          <div className="mb-8 space-y-3">
+             <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 mb-3 flex items-center gap-2">
+                <Zap size={12} className="text-amber-500" />
+                <span>Essential Engines</span>
+             </div>
+             <div className="grid grid-cols-1 gap-2.5">
                 {essentialTools.map(tool => (
                   <button
                     key={tool.id}
                     onClick={() => onSelectCalculator(tool)}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border-2 border-slate-900 text-slate-900 dark:text-white hover:bg-indigo-500 hover:text-white transition-all group active:translate-y-1 active:shadow-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+                    className="flex items-center space-x-3 px-4 py-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border-2 border-slate-900 text-slate-900 dark:text-white hover:bg-indigo-500 hover:text-white transition-all group active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                   >
-                    <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center border-2 border-current">
+                    <div className="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center border-2 border-current shrink-0">
                        {tool.id === 'math-basic' ? <Calculator size={16} /> : <Atom size={16} />}
                     </div>
                     <span className="text-[11px] font-black uppercase tracking-wider truncate">{tool.name}</span>
@@ -88,39 +101,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
              </div>
           </div>
 
+          <div className="h-px bg-slate-900/10 dark:bg-white/10 mb-8 mx-2" />
+
+          {/* Navigation Categories */}
           <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 px-2">Library</div>
-          <nav className="space-y-1">
+          <nav className="space-y-1.5">
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => onSelectCategory(cat.id)}
+                onClick={() => handleCategoryClick(cat.id)}
                 className={`
-                  w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all
+                  w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border-2
                   ${activeCategory === cat.id 
-                    ? 'text-indigo-600 bg-indigo-50 border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
-                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5'}
+                    ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 border-slate-900 shadow-[4px_4px_0px_0px_rgba(99,102,241,1)] translate-x-1' 
+                    : 'text-slate-500 border-transparent hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5'}
                 `}
               >
-                <span className="opacity-70">{cat.icon}</span>
+                <span className={`${activeCategory === cat.id ? 'text-indigo-600' : 'opacity-70'}`}>{cat.icon}</span>
                 <span>{cat.label}</span>
               </button>
             ))}
           </nav>
         </div>
 
+        {/* Dynamic Sections */}
         <div className="flex-1 overflow-y-auto no-scrollbar px-8 py-4 space-y-10">
           {favoriteTools.length > 0 && (
             <section>
               <div className="flex items-center space-x-2 px-2 mb-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                 <Star size={12} className="text-amber-500" fill="currentColor" />
-                <span>Favorites</span>
+                <span>Bookmarks</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {favoriteTools.map(tool => (
                   <button 
                     key={tool.id} 
                     onClick={() => onSelectCalculator(tool)}
-                    className="w-full text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:bg-indigo-500 hover:text-white rounded-xl truncate transition-all border-2 border-transparent hover:border-slate-900"
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-all truncate border-l-2 border-transparent hover:border-indigo-500 pl-4"
                   >
                     {tool.name}
                   </button>
@@ -132,15 +149,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {recentTools.length > 0 && (
             <section>
               <div className="flex items-center space-x-2 px-2 mb-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                <Clock size={12} className="text-indigo-500" />
-                <span>History</span>
+                <Clock size={12} className="text-slate-400" />
+                <span>Recents</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {recentTools.map(tool => tool && (
                   <button 
                     key={tool.id} 
                     onClick={() => onSelectCalculator(tool)}
-                    className="w-full text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:bg-indigo-500 hover:text-white rounded-xl truncate transition-all border-2 border-transparent hover:border-slate-900"
+                    className="w-full text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition-all truncate border-l-2 border-transparent hover:border-indigo-500 pl-4"
                   >
                     {tool.name}
                   </button>
@@ -150,14 +167,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
+        {/* Global Footer Command */}
         <div className="p-8 border-t-4 border-slate-900 shrink-0 bg-slate-50 dark:bg-slate-900/40">
           <button 
             onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
-            className="w-full bg-white dark:bg-slate-800 border-4 border-slate-900 p-4 rounded-2xl flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 active:translate-y-1 active:shadow-none transition-all"
+            className="w-full bg-white dark:bg-slate-800 border-4 border-slate-900 p-4 rounded-2xl flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 active:translate-y-1 active:shadow-none transition-all group"
           >
              <div className="flex items-center gap-3">
-                <Search size={18} className="text-indigo-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Command Pal</span>
+                <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:rotate-12 transition-transform">
+                  <Search size={16} />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Commands</span>
              </div>
              <kbd className="px-2 py-1 bg-slate-900 text-white rounded-lg text-[10px] font-black leading-none">⌘K</kbd>
           </button>
