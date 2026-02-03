@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
+    <title>Cal Max | The Computational OS</title>
+    <meta name="description" content="Next-generation computation platform for finance, health, and science." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              accent: 'var(--accent-color)',
+              brand: {
+                500: 'var(--accent-color)',
+                600: 'var(--accent-color-dark)',
+              },
+              dark: {
+                bg: 'var(--bg-primary)',
+                surface: 'var(--bg-secondary)',
+                border: 'var(--border-color)'
+              }
+            },
+            borderRadius: {
+              'xl': '1rem',
+              '2xl': '1.5rem',
+              '3xl': '2rem',
+              '4xl': '3rem',
+            },
+            animation: {
+              'fade-up': 'fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'blur-in': 'blur-in 0.4s ease-out forwards',
+              'float': 'float 6s ease-in-out infinite',
+              'shimmer': 'shimmer 2s linear infinite',
+              'pulse-subtle': 'pulse-subtle 4s ease-in-out infinite',
+              'mesh': 'mesh-movement 30s ease infinite',
+              'splash-fade': 'splash-fade 2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'reveal': 'reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+            },
+            keyframes: {
+              'fade-up': {
+                '0%': { opacity: '0', transform: 'translateY(30px) scale(0.95)' },
+                '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+              },
+              'shimmer': {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' },
+              },
+              'mesh-movement': {
+                '0%, 100%': { transform: 'translate(0, 0) scale(1) rotate(0deg)' },
+                '33%': { transform: 'translate(8%, 5%) scale(1.1) rotate(3deg)' },
+                '66%': { transform: 'translate(-5%, 2%) scale(0.9) rotate(-2deg)' },
+              },
+              'splash-fade': {
+                '0%': { opacity: '1', transform: 'scale(1)' },
+                '70%': { opacity: '1', transform: 'scale(1.05)' },
+                '100%': { opacity: '0', visibility: 'hidden', transform: 'scale(1.1)' },
+              },
+              'reveal': {
+                '0%': { transform: 'translateY(100%)' },
+                '100%': { transform: 'translateY(0%)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --safe-top: env(safe-area-inset-top);
+        --safe-bottom: env(safe-area-inset-bottom);
+        --accent-color: #6366f1;
+        --accent-color-dark: #4f46e5;
+        --accent-glow: rgba(99, 102, 241, 0.15);
+        --bg-primary: #020617;
+        --bg-secondary: #0f172a;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --glass-blur: 32px;
+        --glass-bg: rgba(255, 255, 255, 0.02);
+      }
+      
+      body { 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        -webkit-font-smoothing: antialiased;
+        background-color: var(--bg-primary);
+        color: #f8fafc;
+        overflow-x: hidden;
+      }
+      
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      
+      .bg-mesh {
+        position: fixed;
+        inset: -50%;
+        z-index: -1;
+        background: radial-gradient(circle at 20% 20%, var(--accent-glow) 0%, transparent 40%),
+                    radial-gradient(circle at 80% 80%, rgba(244, 63, 94, 0.06) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 30%);
+        filter: blur(120px);
+        animation: mesh-movement 40s ease-in-out infinite alternate;
+      }
+
+      .glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .glass-premium {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+        backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .hover-lift {
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      .glow-text {
+        text-shadow: 0 0 20px var(--accent-glow);
+      }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.4",
+        "react-dom": "https://esm.sh/react-dom@^19.2.4",
+        "react-dom/client": "https://esm.sh/react-dom@^19.2.4/client",
+        "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+        "recharts": "https://esm.sh/recharts@^3.7.0",
+        "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+        "react/": "https://esm.sh/react@^19.2.4/"
+      }
+    }
+    </script>
+  </head>
+  <body class="selection:bg-indigo-500/30 selection:text-white">
+    <div class="bg-mesh"></div>
+    <div id="root"></div>
+  </body>
+</html>
